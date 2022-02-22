@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  app_db:
+    container_name: app_db
+    hostname: app_db
+    image: postgres:13-buster
+    restart: always
+    networks:
+      - app_network
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: test_db
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+
+  app:
+    container_name: app
+    hostname: app
+    image: test-pg-r2dbc:latest
+    restart: always
+    networks:
+      - app_network
+    ports:
+      - "8080:8080"
+    depends_on:
+      - app_db
+    environment:
+      DB_HOST: app_db
+      DB_PORT: 5432
+      DB_USER: test
+      DB_PASSWORD: test
+
+networks:
+  app_network:
+    name: app_network
+    driver: bridge
